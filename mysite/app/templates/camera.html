@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{%endblock%}
+
+{% block camera %}
+        
+<head>
+    <link rel="stylesheet" href='{% static "css/camera.css" %}'>
+</head>
+<div>
+    <img id="camera" src="http://127.0.0.1:8000/camera_streaming" alt="">
+</div>
+{% endblock %}

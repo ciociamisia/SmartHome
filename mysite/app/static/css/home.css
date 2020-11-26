@@ -1,0 +1,9 @@
+table{
+    border-style: solid; 
+    border-color: gainsboro; 
+    border-width: 1px;
+  }
+
+  h1, p, th{
+    text-align: center;
+  }

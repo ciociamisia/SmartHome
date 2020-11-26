@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<head>
+    <link rel="stylesheet" href='{% static "css/sockets.css" %}'>
+</head>
+<table class="table" >
+    <tr>
+        <th>Diode</th>
+        <th>Turn ON / OFF</th>
+    </tr>
+    <tr>
+        <td>All socket</td>
+        <td>
+            <label class="switch">
+                <input type="checkbox" name="checkbox" id="all" onchange="change('all')"> 
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Socket no. 1</td>
+        <td>
+            <label class="switch">
+                <input type="checkbox" name="checkbox" id="1" onchange="change('1')"> 
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Socket no. 2</td>
+        <td>
+            <label class="switch">
+                <input type="checkbox" name="checkbox" id="2" onchange="change('2')">
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Socket no. 3</td>
+        <td>
+            <label class="switch">
+                <input type="checkbox" name="checkbox" id="3" onchange="change('3')">
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+</table>
+<script>
+    
+    function change(socket_no){
+        element = document.getElementById(socket_no)
+        if (element.checked){
+            fetch('/sockets/on/' + socket_no).then(function(response){});
+        }else{
+            fetch('/sockets/off/' + socket_no).then(function(response){});
+        }
+        if (socket_no == "all"){
+            toggle(socket_no)
+        }
+        toggleAll()       
+    };
+
+    // Jesli sa klikniete wszystkie przyciski to zaznacz tez all
+    function toggleAll(){
+        one = document.getElementById("1").checked
+        two = document.getElementById("2").checked
+        three = document.getElementById("3").checked
+
+        if (one && two && three){
+            document.getElementById('all').checked = true
+        }else{
+            document.getElementById('all').checked = false
+        }
+    };
+
+    // Jesli jest klikniete all to zaznacz wszystkie przyciski
+    function toggle(source) {
+        checkboxes = document.getElementsByName('checkbox');
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+            checkboxes[i].checked = element.checked;
+        }
+    };
+</script>
+
+{%endblock%}

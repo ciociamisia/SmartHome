@@ -1,0 +1,38 @@
+.jumbotron{
+    width: 550px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -70%);
+    opacity: 0.82;
+    background-color: white;
+}
+  
+img{
+    margin: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+
+label{
+    font-style: oblique;
+}
+  
+a{
+    text-align: center;
+    display: block;
+    color: #d83867;
+    width: 200px;
+    margin: auto;
+    border-radius: 1rem;
+}
+
+a:hover{
+    color: white;
+    background-color: #d83867;
+}
+
+#logout_info{
+    text-align: center;
+}

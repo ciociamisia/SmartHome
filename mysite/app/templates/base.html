@@ -1,0 +1,67 @@
+
+  <html>
+    <head>
+    {% load static %}
+   <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- CSS -->
+    <link rel="stylesheet" href='{% static "css/base.css" %}'>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Font awesome -->
+    <script src="https://kit.fontawesome.com/f8dbae69cb.js" crossorigin="anonymous"></script>
+     <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  </head>
+ 
+  <body background='{% static "images/background.jpg" %}'>
+
+    <div class="container">
+
+      <header class="page-header">
+        <br>
+        <div class="row flex-nowrap justify-content-between align-items-center">
+          <div class="col-4 text-center">
+		        <a class="blog-header-logo text-dark" href="#"><img class="logo" src="{% static 'images/logo-project.png' %}"></a>
+          </div>
+        </div>
+        <br>
+      </header>
+
+      <div>
+        <nav class="nav nav-tabs">
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/"><i class="fas fa-home"></i> Home</a>
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/camera"><i class="fas fa-camera-retro"></i> Camera</a>
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/sockets"><i class="fas fa-bolt"></i> Sockets</a>
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/lights"><i class="far fa-lightbulb"></i> Lights</a>
+	        <a class="flex-sm-fill text-sm-center nav-link active" href="/temperatures"><i class="fas fa-thermometer-half"></i> Temeratures</a>
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/humidity"><i class="fas fa-tint"></i> Humidity</a>
+          <a class="flex-sm-fill text-sm-center nav-link active" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+      </div>
+
+      <div class="jumbotron">
+        {% block content %}
+        {% endblock %}
+      </div>
+      <div>
+        {% block camera %}
+        {% endblock %}
+      </div>
+
+    </div>
+
+    <script>
+      $(document).ready(function () {
+            $("[href]").each(function () {
+                if (this.href == window.location.href) {
+                    $(this).addClass("active");
+                    $(this).css('color', 'white');
+                    $(this).css('background', 'rgba(193, 26, 75, 0.93)');
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

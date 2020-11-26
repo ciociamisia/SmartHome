@@ -1,0 +1,28 @@
+.jumbotron{
+  width: 550px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  opacity: 0.82;
+  background-color: white;
+}
+
+#message{
+  margin-top: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #dd5361;
+  font-weight: bold;
+}
+
+img, .btn{
+  margin: auto;
+  display: block;
+  margin-bottom: 10px;
+}
+
+label{
+  font-style: oblique;
+}

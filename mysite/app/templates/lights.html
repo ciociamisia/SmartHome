@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<head>
+    <link rel="stylesheet" href='{% static "css/lights.css" %}'>
+</head>
+<table class="table" >
+    <tr>
+        <th>Diode</th>
+        <th>Turn ON / OFF</th>
+    </tr>
+    <tr>
+        <td>All</td>
+        <td>
+            <label class="switch">
+                {% if all_led %}
+                <input type="checkbox" name="checkbox" id="all" onchange="change('all')" checked> 
+                {% else %}
+                <input type="checkbox" name="checkbox" id="all" onchange="change('all')"> 
+                {% endif %}
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Red diode</td>
+        <td>
+            <label class="switch">
+                {% if red %}
+                <input type="checkbox" name="checkbox" id="red" onchange="change('red')" checked>> 
+                {% else %}
+                <input type="checkbox" name="checkbox" id="red" onchange="change('red')">  
+                {% endif %}
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Green diode</td>
+        <td>
+            <label class="switch">
+                {% if green %}
+                <input type="checkbox" name="checkbox" id="green" onchange="change('green')" checked>
+                {% else %}
+                <input type="checkbox" name="checkbox" id="green" onchange="change('green')">
+                {% endif %}
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Yellow diode</td>
+        <td>
+            <label class="switch">
+                {% if yellow %}
+                <input type="checkbox" name="checkbox" id="yellow" onchange="change('yellow')" checked>
+                {% else %}
+                <input type="checkbox" name="checkbox" id="yellow" onchange="change('yellow')">
+                {% endif %}
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+    <tr>
+        <td>Light</td>
+        <td>
+            <label class="switch">
+                {% if light %}
+                <input type="checkbox" name="checkbox" id="light" onchange="change('light')" checked> 
+                {% else %}
+                <input type="checkbox" name="checkbox" id="light" onchange="change('light')">
+                {% endif %}
+                <span class="slider round"></span>
+              </label>
+        </td>
+    </tr>
+</table>
+<script>
+
+    function change(diode){
+        element = document.getElementById(diode)
+        if (element.checked){
+            fetch('/lights/on/' + diode).then(function(response){});
+        }else{
+            fetch('/lights/off/' + diode).then(function(response){});
+        }
+        if (diode == "all"){
+            toggle(element)
+        }
+        toggleAll()       
+    };
+
+    // Jesli sa klikniete wszystkie przyciski to zaznacz tez all
+    function toggleAll(){
+        red = document.getElementById("red").checked
+        green = document.getElementById("green").checked
+        yellow = document.getElementById("yellow").checked
+        light = document.getElementById("light").checked
+
+        if (red && green && yellow && light){
+            document.getElementById('all').checked = true
+        }else{
+            document.getElementById('all').checked = false
+        }
+    };
+
+    // Jesli jest klikniete all to zaznacz wszystkie przyciski
+    function toggle(source) {
+        checkboxes = document.getElementsByName('checkbox');
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+            checkboxes[i].checked = element.checked;
+        }
+    };
+</script>
+
+{%endblock%}

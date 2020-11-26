@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<head>
+    <link rel="stylesheet" href='{% static "css/temp_hum.css" %}'>
+</head>
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-line"></i> Temperatures time chart</h2>
+    </div>
+</div>
+<br>
+<form method="POST">
+    {% csrf_token %}
+    <div class="input-div">
+        <div class="input-group mb-3 input">
+            <div class="input-group-prepend">
+                <label for="date_min" class="input-group-text label">Date min</label>
+            </div>
+            <input type="date" name="date_min" id="date_min" class="form-control" value="{{ date_min }}"> 
+        </div>
+        <div class="input-group mb-3 input">
+            <div class="input-group-prepend">
+                <label for="date_max" class="input-group-text label">Date max</label>
+            </div>
+        <input type="date" name="date_max" id="date_max" class="form-control" value="{{ date_max }}"> 
+        </div>
+    </div>
+    <div>
+        <button class="btn" type="submit"><i class="fas fa-sort"></i> Filter by date</button>
+    </div>
+    <div class="chart" id="timeChart">
+        <script>
+           var graph = [{{ timeGraph | safe }}];
+           Plotly.plot('timeChart', graph), {};
+       </script>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,25 @@
+.page-header{
+  border-bottom: 1px solid;
+}
+
+.logo{
+  padding-left: 100%;
+  padding-right: 100%;
+}
+
+.jumbotron{
+  background-color: white;
+  opacity: 0.82;
+}
+
+
+.nav-tabs{
+  opacity: 0.82;
+}
+.nav-link.active:hover{
+  background-color: #da527c;
+}
+
+a{
+  font-weight: bold;
+}

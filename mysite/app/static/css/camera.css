@@ -1,0 +1,14 @@
+
+.jumbotron{
+    height: 800px;
+}
+
+#camera{
+    margin: auto;
+    display: block;
+    width: 80%;
+    position: relative;
+    margin-top:-770px;
+}
+    
+
