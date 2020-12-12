@@ -12,7 +12,7 @@ from rpi_rf import RFDevice
 import dht11
 import cv2
 import time
-from app.models import Lights, Temp_And_Hum
+from app.models import Lights, Temp_And_Hum, Motion_Detector
 import json
 import plotly
 import plotly.graph_objs as go
@@ -87,6 +87,60 @@ def read_home_variables():
 
     return temp, hum, water_status, fire_status
 
+def get_user_object(request):
+    user = request.user
+    user_object = Motion_Detector.objects.get(user_fkey_id = user.id)
+    return user_object
+
+@login_required(login_url='/login')
+def motion_detector(request):
+    user_object = get_user_object(request)
+    accept_sms = user_object.accept_sms
+    accept_email =  user_object.accept_email
+    phone = user_object.phone
+    email = user_object.email
+    send = user_object.send 
+    info = ''
+    if request.method == 'POST':
+        if "change_email" in request.POST:
+            try:
+                email = request.POST['email']
+                user_object.email = email
+                info = 'success'
+            except:
+                info = 'error'
+        if "change_phone" in request.POST:
+            try:
+                phone = request.POST['phone']
+                user_object.phone = phone
+                info = 'success'
+            except:
+                info = 'error'
+        if "reset" in request.POST:
+            try:
+                user_object.send = False
+                send = False
+                info = 'success'
+            except:
+                info = 'error'
+
+        user_object.save()
+    context = {'accept_sms' : accept_sms , 'accept_email' : accept_email,
+     'phone': phone, 'email' : email, 'send' : send, 'info' : info}
+    return render(request, 'motion_detector.html', context)
+
+def motion_detector_turn(request, turn, alert):
+    user_object = get_user_object(request)
+    if turn == "on":
+        status = True
+    else:
+        status = False
+    if alert == 'sms':
+        user_object.accept_sms = status
+    elif alert == 'email':
+        user_object.accept_email = status
+    user_object.save()
+    return HttpResponse()
 
 @login_required(login_url='/login')
 def camera(request):
@@ -138,24 +192,18 @@ def sockets(request):
     return render(request, 'sockets.html')
 
 
-def socketsON(request, socket_no):
-    if socket_no == "all":     
+def sockets_turn(request, turn, socket_no):
+    if socket_no == "all": 
+        if turn == 'on':
+            code =  15642210
+        else:
+            code = 15642209
         rfdevice = RFDevice(22)
         rfdevice.enable_tx()
         rfdevice.tx_repeat = 100
-        rfdevice.tx_code(15642210, 1, 314)
+        rfdevice.tx_code(code, 1, 314)
         rfdevice.cleanup()
 
-    return HttpResponse()
-
-def socketsOFF(request, socket_no):
-    if socket_no == "all":
-        rfdevice = RFDevice(22)
-        rfdevice.enable_tx()
-        rfdevice.tx_repeat = 100
-        rfdevice.tx_code(15642209, 1, 314)
-        rfdevice.cleanup()
-        
     return HttpResponse()
 
 def get_light_info():
@@ -180,96 +228,57 @@ def lights(request):
     context = {'red' : red, 'green' : green, 'yellow': yellow, 'light' : light, 'all_led' : all_led }
     return render(request, 'lights.html', context)
 
-def lightsON(request, diode):
+def lights_turn(request, turn, diode):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-
+    if turn == "on":
+        status = True
+        state_diode = GPIO.LOW
+        state_light = GPIO.HIGH
+    else:
+        status = False
+        state_diode = GPIO.HIGH
+        state_light = GPIO.LOW
     red, green, yellow, light = get_light_info()
 
     if diode == "all":
         GPIO.setup([18,17,15], GPIO.OUT)
-        GPIO.output([18,17,15],  GPIO.LOW)
+        GPIO.output([18,17,15],  state_diode)
         GPIO.setup(14, GPIO.OUT)
-        GPIO.output(14,  GPIO.HIGH)
-        red.turn_on  = True
+        GPIO.output(14, state_light)
+        red.turn_on = status
         red.save()
-        green.turn_on  = True
+        green.turn_on = status
         green.save()
-        yellow.turn_on  = True
+        yellow.turn_on = status
         yellow.save()
-        light.turn_on  = True
+        light.turn_on = status
         light.save()
          
     elif diode == "red":
         GPIO.setup(17, GPIO.OUT)
-        GPIO.output(17,  GPIO.LOW)
-        red.turn_on  = True
+        GPIO.output(17, state_diode)
+        red.turn_on  = status
         red.save()
 
     elif diode == "green":
         GPIO.setup(18, GPIO.OUT)
-        GPIO.output(18,  GPIO.LOW)
-        green.turn_on  = True
+        GPIO.output(18, state_diode)
+        green.turn_on  = status
         green.save()
 
     elif diode == "yellow":
         GPIO.setup(15, GPIO.OUT)
-        GPIO.output(15,  GPIO.LOW)
-        yellow.turn_on  = True
+        GPIO.output(15, state_diode)
+        yellow.turn_on  = status
         yellow.save() 
 
     elif diode == "light":
         GPIO.setup(14, GPIO.OUT)
-        GPIO.output(14,  GPIO.HIGH)
-        light.turn_on  = True
+        GPIO.output(14, state_light)
+        light.turn_on = status
         light.save()
 
-    return HttpResponse()
-
-def lightsOFF(request, diode):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-
-    red, green, yellow, light = get_light_info()
-    
-    if diode == "all":
-        GPIO.setup([18,17,15], GPIO.OUT)
-        GPIO.output([18,17,15],  GPIO.HIGH)
-        GPIO.setup(14, GPIO.OUT)
-        GPIO.output(14,  GPIO.LOW)
-        red.turn_on  = False
-        red.save()
-        green.turn_on  = False
-        green.save()
-        yellow.turn_on  = False
-        yellow.save()
-        light.turn_on  = False
-        light.save()
-
-    elif diode == "red":
-        GPIO.setup(17, GPIO.OUT)
-        GPIO.output(17,  GPIO.HIGH)
-        red.turn_on = False
-        red.save()
-
-    elif diode == "green":
-        GPIO.setup(18, GPIO.OUT)
-        GPIO.output(18,  GPIO.HIGH)
-        green.turn_on  = False
-        green.save()
-
-    elif diode == "yellow":
-        GPIO.setup(15, GPIO.OUT)
-        GPIO.output(15,  GPIO.HIGH)
-        yellow.turn_on  = False
-        yellow.save()
-
-    elif diode == "light":
-        GPIO.setup(14, GPIO.OUT)
-        GPIO.output(14,  GPIO.LOW)
-        light.turn_on  = False
-        light.save()   
-    
     return HttpResponse()
 
 @login_required(login_url='/login')

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<head>
+  <link rel="stylesheet" href='{% static "css/motion_detector.css" %}'>
+</head>
+<form method="POST">
+    {% csrf_token %}
+    {% if send %}
+    <div class="row">
+        <div class="col-10">
+            <p>You have received a motion detected message, if you want to receive the message again press reset</p>
+        </div>
+        <div class="col-2">
+            <button type="submit" name="reset" class="btn btn-danger">Reset</button>
+        </div>
+    </div>
+    <br>
+    {% endif %}
+    <div class="row">
+        <div class="col-12">
+            <h3>Your alerts</h3>
+        </div>
+        <div class="col-12">
+            <table class="table" >
+                <tr>
+                    <th>Accept sms allert</th>
+                    <td>
+                        <label class="switch">
+                            {% if accept_sms %}
+                            <input type="checkbox" name="checkbox" id="sms" onchange="change('sms')" checked> 
+                            {% else %}
+                            <input type="checkbox" name="checkbox" id="sms" onchange="change('sms')"> 
+                            {% endif %}
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Accept email allert</th>
+                    <td>
+                        <label class="switch">
+                            {% if accept_email %}
+                            <input type="checkbox" name="checkbox" id="email" onchange="change('email')" checked> 
+                            {% else %}
+                            <input type="checkbox" name="checkbox" id="email" onchange="change('email')"> 
+                            {% endif %}
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-12">
+            <h3>Your date</h3>
+        </div>
+        <div class="col-12">   
+            <table class="table">
+                <tr>
+                    <th><i class="fas fa-phone"></i> Phone number</th>
+                    <td><input type="tel" pattern="[0-9]{9}"
+                        required name="phone" value="{{phone}}" class="form-control"></td>
+                    <td><button type="submit" name="change_phone" class="btn btn-danger"><i class="fas fa-edit"></i> Change phone number</button></td>
+                </tr>
+                <tr>
+                    <th><i class="fas fa-envelope"></i> Email</th>
+                    <td><input type="email" name="email" value="{{email}}" class="form-control"></td>
+                    <td><button type="submit" name="change_email" class="btn btn-danger"><i class="fas fa-edit"></i> Change email</button></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</form>
+<div class="alert alert-success" id='success'></div>
+<div class="alert alert-danger" id='error'></div>
+<script>
+{% if info == 'error' %}
+let error_div = document.getElementById('error')
+error_div.innerHTML = '<p class="p-info"><strong>Error!</strong> The data has not been updated. Please try again or contact the administrator./p><i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>'
+document.getElementById("error").style.display = "flex";
+$("#error").delay(8000).hide(400);
+{% elif info == 'success' %}
+let succes_div = document.getElementById('success')
+succes_div.innerHTML = '<p class="p-info"><strong>Success!</strong> The data has been updated.</p><i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>'
+document.getElementById("success").style.display = "flex";
+$("#success").delay(8000).hide(400);
+{% endif %}
+
+function turnOff(){
+  $("#error").hide();
+  $("#success").hide();
+}
+
+function change(checkbox){
+    element = document.getElementById(checkbox)
+    if (element.checked){
+        fetch('/motion_detector/on/' + checkbox).then(function(response){});
+    }else{
+        fetch('/motion_detector/off/' + checkbox).then(function(response){});
+    } 
+};
+</script>
+{%endblock%}
