@@ -80,7 +80,7 @@
 <script>
 {% if info == 'error' %}
 let error_div = document.getElementById('error')
-error_div.innerHTML = '<p class="p-info"><strong>Error!</strong> The data has not been updated. Please try again or contact the administrator./p><i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>'
+error_div.innerHTML = '<p class="p-info"><strong>Error!</strong> The data has not been updated. Please try again or contact the administrator.</p><i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>'
 document.getElementById("error").style.display = "flex";
 $("#error").delay(8000).hide(400);
 {% elif info == 'success' %}
