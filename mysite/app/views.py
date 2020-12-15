@@ -20,6 +20,7 @@ import plotly.express as px
 
 
 def login(request):
+    ''' login view '''
     if request.method == 'POST':
         login = request.POST['login']
         password = request.POST['password']
@@ -35,21 +36,25 @@ def login(request):
     return render(request, 'login.html')
 
 def logout(request):
+    ''' logout view '''
     auth.logout(request)
     return render(request, 'logout.html')
 
 @login_required(login_url='/login')
 def home(request):
+    ''' home site view '''
     temp, hum, water_status, fire_status = read_home_variables()
     context = {'temp' : temp, 'hum' : hum, 'water_status' : water_status, 'fire_status' : fire_status} 
     return render(request, 'home.html', context)
 
 def home_variables(request):
+    ''' get temp, hum, water_status, fire_status from read_home_variables() and return in JSON '''
     temp, hum, water_status, fire_status = read_home_variables()
     context = {'temp' : temp, 'hum' : hum, 'water_status' : water_status, 'fire_status' : fire_status}
     return JsonResponse(context)
 
 def read_home_variables():
+    ''' get temp, hum, water_status, fire_status and return '''
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
 
@@ -88,18 +93,16 @@ def read_home_variables():
     return temp, hum, water_status, fire_status
 
 def get_user_object(request):
+    '''get Motion Detector object for logged user '''
     user = request.user
     user_object = Motion_Detector.objects.get(user_fkey_id = user.id)
     return user_object
 
 @login_required(login_url='/login')
 def motion_detector(request):
+    '''motion detector view '''
     user_object = get_user_object(request)
-    accept_sms = user_object.accept_sms
-    accept_email =  user_object.accept_email
-    phone = user_object.phone
-    email = user_object.email
-    send = user_object.send 
+    accept_sms, accept_email, phone, email, send  = get_motion_detector_details(user_object)
     info = ''
     if request.method == 'POST':
         if "change_email" in request.POST:
@@ -129,7 +132,17 @@ def motion_detector(request):
      'phone': phone, 'email' : email, 'send' : send, 'info' : info}
     return render(request, 'motion_detector.html', context)
 
+def get_motion_detector_details(user_object):
+    ''' get motion detector details '''
+    accept_sms = user_object.accept_sms
+    accept_email =  user_object.accept_email
+    phone = user_object.phone
+    email = user_object.email
+    send = user_object.send 
+    return accept_sms, accept_email, phone, email, send 
+
 def motion_detector_turn(request, turn, alert):
+    ''' accepting or resigning from sharing sms or email '''
     user_object = get_user_object(request)
     if turn == "on":
         status = True
@@ -144,16 +157,21 @@ def motion_detector_turn(request, turn, alert):
 
 @login_required(login_url='/login')
 def camera(request):
+    ''' camera view '''
     return render(request, 'camera.html')
 
 class VideoCamera(object):
     def __init__(self):
+        ''' capturing video '''
         self.video = cv2.VideoCapture(0)
         self.first_frame = None
+
     def __del__(self):
+        ''' releasing camera '''
         self.video.release()
 
     def get_frame(self):
+        ''' extracting frames and catching motion '''
         ret, image = self.video.read()
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21,21), 0)
@@ -165,12 +183,14 @@ class VideoCamera(object):
 
         (cnts, _) = cv2.findContours(thresh_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        #drawing a square on the differences from the first frame
         for contour in cnts:
             if cv2.contourArea(contour) < 1000:
                 continue
             (x, y, w, h) = cv2.boundingRect(contour)
             cv2.rectangle(image, (x, y), (x+w, y+h), (5, 122, 5), 3)
-        
+
+        #encode frame
         ret, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
 
@@ -182,6 +202,7 @@ def gen(camera):
 
 @gzip.gzip_page
 def camera_streaming(request):
+    ''' video streaming view '''
     try:
         return StreamingHttpResponse(gen(VideoCamera()),content_type="multipart/x-mixed-replace;boundary=frame")
     except:
@@ -189,10 +210,12 @@ def camera_streaming(request):
     
 @login_required(login_url='/login')
 def sockets(request):
+    ''' sockets view '''
     return render(request, 'sockets.html')
 
 
 def sockets_turn(request, turn, socket_no):
+    ''' turn on or turn of sockets '''
     if socket_no == "all": 
         if turn == 'on':
             code =  15642210
@@ -207,6 +230,7 @@ def sockets_turn(request, turn, socket_no):
     return HttpResponse()
 
 def get_light_info():
+    ''' get lights object '''
     red = Lights.objects.get(name='red')
     green = Lights.objects.get(name='green')
     yellow = Lights.objects.get(name='yellow')
@@ -215,6 +239,7 @@ def get_light_info():
 
 @login_required(login_url='/login')
 def lights(request):
+    ''' lights view '''
     red, green, yellow, light = get_light_info()
     red = red.turn_on
     green = green.turn_on
@@ -229,6 +254,7 @@ def lights(request):
     return render(request, 'lights.html', context)
 
 def lights_turn(request, turn, diode):
+    ''' turn on or turn of lights '''
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     if turn == "on":
@@ -283,6 +309,7 @@ def lights_turn(request, turn, diode):
 
 @login_required(login_url='/login')
 def temperatures(request):
+    ''' temperatures chart view '''
     date_max = date.today()
     date_min = date_max - timedelta(days=7)
     if request.method == 'POST':
@@ -298,6 +325,7 @@ def temperatures(request):
 
 @login_required(login_url='/login')
 def humidity(request):
+    ''' humidity chart view '''
     date_max = date.today()
     date_min = date_max - timedelta(days=7)
     if request.method == 'POST':
@@ -312,6 +340,7 @@ def humidity(request):
     return render(request, 'humidity.html', context)
 
 def createGraph(xAxis, yAxis, nameGraph):
+    ''' create graph '''
     data = go.Scatter(
         x = xAxis,
         y = yAxis,
