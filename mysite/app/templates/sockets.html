@@ -13,7 +13,11 @@
         <td>All socket</td>
         <td>
             <label class="switch">
+                {% if all_sockets %}
+                <input type="checkbox" name="checkbox" id="all" onchange="change('all')" checked> 
+                {% else %}
                 <input type="checkbox" name="checkbox" id="all" onchange="change('all')"> 
+                {% endif %}
                 <span class="slider round"></span>
               </label>
         </td>
@@ -22,7 +26,11 @@
         <td>Socket no. 1</td>
         <td>
             <label class="switch">
+                {% if socket_no1 %}
+                <input type="checkbox" name="checkbox" id="1" onchange="change('1')" checked> 
+                {% else %}
                 <input type="checkbox" name="checkbox" id="1" onchange="change('1')"> 
+                {% endif %}
                 <span class="slider round"></span>
               </label>
         </td>
@@ -31,7 +39,11 @@
         <td>Socket no. 2</td>
         <td>
             <label class="switch">
-                <input type="checkbox" name="checkbox" id="2" onchange="change('2')">
+                {% if socket_no2 %}
+                <input type="checkbox" name="checkbox" id="2" onchange="change('2')" checked> 
+                {% else %}
+                <input type="checkbox" name="checkbox" id="2" onchange="change('2')"> 
+                {% endif %}
                 <span class="slider round"></span>
               </label>
         </td>
@@ -40,7 +52,11 @@
         <td>Socket no. 3</td>
         <td>
             <label class="switch">
-                <input type="checkbox" name="checkbox" id="3" onchange="change('3')">
+                {% if socket_no3 %}
+                <input type="checkbox" name="checkbox" id="3" onchange="change('3')" checked> 
+                {% else %}
+                <input type="checkbox" name="checkbox" id="3" onchange="change('3')"> 
+                {% endif %}
                 <span class="slider round"></span>
               </label>
         </td>

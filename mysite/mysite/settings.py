@@ -80,9 +80,9 @@ DATABASES = {
 
         'NAME': 'postgres',
 
-        'USER': 'USERNAME',
+        'USER': 'pi',
 
-        'PASSWORD': 'PASSWORD',
+        'PASSWORD': 'Misia123',
 
         'HOST': '127.0.0.1',
 

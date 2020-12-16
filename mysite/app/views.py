@@ -12,7 +12,7 @@ from rpi_rf import RFDevice
 import dht11
 import cv2
 import time
-from app.models import Lights, Temp_And_Hum, Motion_Detector
+from app.models import Lights, Sockets, Temp_And_Hum, Motion_Detector
 import json
 import plotly
 import plotly.graph_objs as go
@@ -207,25 +207,81 @@ def camera_streaming(request):
         return StreamingHttpResponse(gen(VideoCamera()),content_type="multipart/x-mixed-replace;boundary=frame")
     except:
         print("aborted")
-    
+
+def get_sockets_info():
+    ''' get sockets object '''
+    socket_no1 = Sockets.objects.get(name='socket_no1')
+    socket_no2 = Sockets.objects.get(name='socket_no2')
+    socket_no3 = Sockets.objects.get(name='socket_no3')
+    return socket_no1, socket_no2, socket_no3
+
 @login_required(login_url='/login')
 def sockets(request):
     ''' sockets view '''
-    return render(request, 'sockets.html')
+    socket_no1, socket_no2, socket_no3 = get_sockets_info()
+    socket_no1 = socket_no1.turn_on
+    socket_no2 = socket_no2.turn_on
+    socket_no3 = socket_no3.turn_on
+
+    if socket_no1 and socket_no2 and socket_no3:
+        all_sockets = True
+    else:
+        all_sockets  = False
+    context = {'socket_no1' : socket_no1, 'socket_no2' : socket_no2, 'socket_no3': socket_no3, 'all_sockets' : all_sockets}
+    return render(request, 'sockets.html', context)
 
 
 def sockets_turn(request, turn, socket_no):
     ''' turn on or turn of sockets '''
-    if socket_no == "all": 
-        if turn == 'on':
+    socket_no1, socket_no2, socket_no3 = get_sockets_info()
+    if turn == 'on':
+        if socket_no == "all": 
             code =  15642210
-        else:
-            code = 15642209
-        rfdevice = RFDevice(22)
-        rfdevice.enable_tx()
-        rfdevice.tx_repeat = 100
-        rfdevice.tx_code(code, 1, 314)
-        rfdevice.cleanup()
+            socket_no1.turn_on = True
+            socket_no1.save()
+            socket_no2.turn_on = True
+            socket_no2.save()
+            socket_no3.turn_on = True
+            socket_no3.save()
+        elif socket_no == "1":
+            code = 15642223
+            socket_no1.turn_on = True
+            socket_no1.save()
+        elif  socket_no == "2":
+            code = 15642221
+            socket_no2.turn_on = True
+            socket_no2.save()
+        elif socket_no == "3":
+            code = 15642219
+            socket_no3.turn_on = True
+            socket_no3.save()
+    else:
+        if socket_no == "all": 
+            code = 15642222 
+            socket_no1.turn_on = False
+            socket_no1.save()
+            socket_no2.turn_on = False
+            socket_no2.save()
+            socket_no3.turn_on = False
+            socket_no3.save()
+        elif socket_no == "1":
+            code = 15642223
+            socket_no1.turn_on = False
+            socket_no1.save()
+        elif  socket_no == "2":
+            code = 15642221
+            socket_no2.turn_on = False
+            socket_no2.save()
+        elif socket_no == "3":
+            code = 15642219
+            socket_no3.turn_on = False
+            socket_no3.save()
+
+    rfdevice = RFDevice(22)
+    rfdevice.enable_tx()
+    rfdevice.tx_repeat = 500
+    rfdevice.tx_code(code, 1, 315)
+    rfdevice.cleanup()
 
     return HttpResponse()
 
