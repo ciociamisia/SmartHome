@@ -67,3 +67,27 @@
     text-align: center;
     vertical-align: inherit;
   }
+  .alert{
+    position: absolute;
+    top: 10px;
+    right: 0;
+    opacity: 0.75;
+    display: none;
+    padding: 0;
+    right: 10px;
+  }
+  
+  .cross{
+    font-size: 18px;
+    margin-right: 5px;
+    margin-top: 5px;
+  }
+  .cross:hover{
+    color: red;
+    cursor: pointer;
+  }
+  .p-info{
+    padding: .75rem 1.25rem;
+    margin-bottom: 0rem;
+    margin-right: -10px;
+  }

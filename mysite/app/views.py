@@ -234,56 +234,52 @@ def sockets(request):
 def sockets_turn(request, turn, socket_no):
     ''' turn on or turn of sockets '''
     socket_no1, socket_no2, socket_no3 = get_sockets_info()
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
     if turn == 'on':
         if socket_no == "all": 
             code =  15642210
             socket_no1.turn_on = True
-            socket_no1.save()
             socket_no2.turn_on = True
-            socket_no2.save()
             socket_no3.turn_on = True
-            socket_no3.save()
         elif socket_no == "1":
             code = 15642223
             socket_no1.turn_on = True
-            socket_no1.save()
         elif  socket_no == "2":
             code = 15642221
             socket_no2.turn_on = True
-            socket_no2.save()
         elif socket_no == "3":
             code = 15642219
             socket_no3.turn_on = True
-            socket_no3.save()
     else:
         if socket_no == "all": 
             code = 15642222 
             socket_no1.turn_on = False
-            socket_no1.save()
             socket_no2.turn_on = False
-            socket_no2.save()
             socket_no3.turn_on = False
-            socket_no3.save()
         elif socket_no == "1":
-            code = 15642223
+            code = 15642222
             socket_no1.turn_on = False
-            socket_no1.save()
         elif  socket_no == "2":
-            code = 15642221
+            code = 5642220
             socket_no2.turn_on = False
-            socket_no2.save()
         elif socket_no == "3":
-            code = 15642219
+            code = 15642218
             socket_no3.turn_on = False
-            socket_no3.save()
-
-    rfdevice = RFDevice(22)
-    rfdevice.enable_tx()
-    rfdevice.tx_repeat = 500
-    rfdevice.tx_code(code, 1, 315)
-    rfdevice.cleanup()
-
-    return HttpResponse()
+    try:
+        rfdevice = RFDevice(22)
+        rfdevice.enable_tx()
+        rfdevice.tx_repeat = 200
+        rfdevice.tx_code(code, 1, 315)
+        rfdevice.cleanup()
+        socket_no1.save()
+        socket_no2.save()
+        socket_no3.save()
+        info = 'success'
+    except:
+        info = 'error'
+    context = {'info' : info}
+    return JsonResponse(context)
 
 def get_light_info():
     ''' get lights object '''

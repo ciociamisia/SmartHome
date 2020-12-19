@@ -62,14 +62,69 @@
         </td>
     </tr>
 </table>
+<div class="alert alert-warning" id='warning'>
+    <div class="row">
+        <div class="col-10">
+            <p class="p-info"><strong>Wait!</strong> Your data is now being updated.</p>
+        </div>
+        <div class="col-2 text-right">
+            <i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>
+        </div>
+    </div>
+</div>
+<div class="alert alert-success" id='success'>
+    <div class="row">
+        <div class="col-10">
+            <p class="p-info"><strong>Success!</strong> The data has been updated.</p>
+        </div>
+        <div class="col-2 text-right">
+            <i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>
+        </div>
+    </div>
+</div>
+<div class="alert alert-danger" id='error'>
+    <div class="row">
+        <div class="col-10">
+            <p class="p-info"><strong>Error!</strong> The data not has been updated. Please refresh site and try again.</p>
+        </div>
+        <div class="col-2 text-right">
+            <i class="fa fa-times cross" aria-hidden="true" onclick="turnOff()"></i>
+        </div>
+    </div>
+</div>
 <script>
     
     function change(socket_no){
         element = document.getElementById(socket_no)
+        $("#warning").show();
         if (element.checked){
-            fetch('/sockets/on/' + socket_no).then(function(response){});
+            fetch('/sockets/on/' + socket_no).then(function(response){
+                response.json().then(function(data){
+                    if (data.info == 'success'){
+                        $("#warning").hide();
+                        $("#success").show();
+                        $("#success").delay(8000).hide(400);
+                    }else{
+                        $("#warning").hide();
+                        $("#error").show();
+                        $("#error").delay(8000).hide(400);
+                    }
+                });
+            });
         }else{
-            fetch('/sockets/off/' + socket_no).then(function(response){});
+            fetch('/sockets/off/' + socket_no).then(function(response){
+                response.json().then(function(data){
+                    if (data.info == 'success'){
+                        $("#warning").hide();
+                        $("#success").show();
+                        $("#success").delay(8000).hide(400);
+                    }else{
+                        $("#warning").hide();
+                        $("#error").show();
+                        $("#error").delay(8000).hide(400);
+                    }
+                });
+            });
         }
         if (socket_no == "all"){
             toggle(socket_no)
@@ -97,6 +152,14 @@
             checkboxes[i].checked = element.checked;
         }
     };
+
+    function turnOff(){
+        $("#warning").hide();
+        $("#success").hide();
+        $("#error").hide();
+    };
+
+
 </script>
 
 {%endblock%}
