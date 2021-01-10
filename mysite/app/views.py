@@ -234,8 +234,6 @@ def sockets(request):
 def sockets_turn(request, turn, socket_no):
     ''' turn on or turn of sockets '''
     socket_no1, socket_no2, socket_no3 = get_sockets_info()
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
     if turn == 'on':
         if socket_no == "all": 
             code =  15642210
@@ -297,7 +295,6 @@ def lights(request):
     green = green.turn_on
     yellow = yellow.turn_on
     light = light.turn_on
-
     if red and green and yellow and light:
         all_led = True
     else:
@@ -325,37 +322,34 @@ def lights_turn(request, turn, diode):
         GPIO.setup(14, GPIO.OUT)
         GPIO.output(14, state_light)
         red.turn_on = status
-        red.save()
         green.turn_on = status
-        green.save()
         yellow.turn_on = status
-        yellow.save()
         light.turn_on = status
-        light.save()
          
     elif diode == "red":
         GPIO.setup(17, GPIO.OUT)
         GPIO.output(17, state_diode)
         red.turn_on  = status
-        red.save()
 
     elif diode == "green":
         GPIO.setup(18, GPIO.OUT)
         GPIO.output(18, state_diode)
         green.turn_on  = status
-        green.save()
 
     elif diode == "yellow":
         GPIO.setup(15, GPIO.OUT)
         GPIO.output(15, state_diode)
         yellow.turn_on  = status
-        yellow.save() 
-
+         
     elif diode == "light":
         GPIO.setup(14, GPIO.OUT)
         GPIO.output(14, state_light)
         light.turn_on = status
-        light.save()
+
+    red.save()
+    green.save()
+    yellow.save()
+    light.save()
 
     return HttpResponse()
 
