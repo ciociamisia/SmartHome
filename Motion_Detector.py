@@ -15,7 +15,7 @@ GPIO.setup(16, GPIO.IN)
 def q_run(querry):
     ''' execute querry'''
     username = 'pi'
-    password = 'Misia123'
+    password = '****'
     host = '127.0.0.1'
     kport = "5432"
     kdb = "postgres"
@@ -33,9 +33,9 @@ def q_run(querry):
     cur.close()
         
 def send_email(email):
-    sender_email = "smarthomeinzynierka@gmail.com"
+    sender_email = "*****"
     receiver_email = email
-    password = 'inzynierka1'
+    password = '****'
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Smart Home: Motion Detector!"
